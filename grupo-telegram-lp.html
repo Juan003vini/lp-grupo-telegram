@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grupo Liberado!</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00E676;
+    --green-glow: rgba(0,230,118,0.18);
+    --black: #050a05;
+    --card-bg: #0d1a0d;
+    --border: rgba(0,230,118,0.2);
+    --text: #e8f5e8;
+    --muted: rgba(232,245,232,0.5);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,230,118,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,230,118,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,230,118,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+  .header {
+    text-align: center;
+    padding: 40px 0 24px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--green-glow);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    animation: pulse-border 2s infinite;
+  }
+  @keyframes pulse-border {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,230,118,0.3); }
+    50%       { box-shadow: 0 0 0 6px rgba(0,230,118,0); }
+  }
+  .title-main {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 58px;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .title-main span {
+    color: var(--green);
+    display: block;
+    font-size: 72px;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0;
+    opacity: 0.4;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--green);
+  }
+  .divider-text {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--green);
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .stat-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--green);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .bingos-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--green);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 14px;
+    opacity: 0.8;
+  }
+  .bingos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .bingo-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .bingo-card:nth-child(1) { animation-delay: 0.1s; }
+  .bingo-card:nth-child(2) { animation-delay: 0.25s; }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.82); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .bingo-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,230,118,0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .bingo-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    flex: 1;
+  }
+  .bingo-stamp {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #000;
+    background: var(--green);
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .bingo-check {
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .bingo-odd-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .bingo-odd-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .bingo-odd {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 58px;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: -1px;
+    text-shadow: 0 0 40px rgba(0,230,118,0.35);
+  }
+  .bingo-odd em {
+    color: var(--green);
+    font-style: normal;
+  }
+  .cta-wrap { text-align: center; }
+  .cta-hint {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .cta-btn {
+    display: block;
+    width: 100%;
+    background: var(--green);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    padding: 18px 20px;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 30px rgba(0,230,118,0.35), 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+  }
+  .cta-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 15px rgba(0,230,118,0.2);
+  }
+  .cta-free {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.85;
+  }
+  .live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.2; }
+  }
+  .footer {
+    margin-top: 36px;
+    text-align: center;
+    font-size: 9px;
+    color: rgba(232,245,232,0.25);
+    line-height: 1.6;
+    padding: 0 10px;
+  }
+  .footer-resp {
+    font-size: 10px;
+    color: rgba(232,245,232,0.35);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="badge"><span class="live-dot"></span>Boa do Dia Liberada</div>
+    <h1 class="title-main">
+      Grupo
+      <span>LIBERADO!</span>
+    </h1>
+    <p class="subtitle">Acesse agora e receba as melhores tips do dia</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-num">46K</div>
+      <div class="stat-label">Membros</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">+30</div>
+      <div class="stat-label">Greens/Semana</div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-text">Bingos Recentes</span></div>
+  <p class="bingos-label">🎯 ODDs confirmadas no green</p>
+
+  <div class="bingos-grid">
+    <div class="bingo-card">
+      <div class="bingo-left">
+        <div class="bingo-stamp">✓ BINGO</div>
+        <div class="bingo-check">⚡ Green confirmado</div>
+      </div>
+      <div class="bingo-odd-wrap">
+        <div class="bingo-odd-label">ODD</div>
+        <div class="bingo-odd"><em>1</em>41</div>
+      </div>
+    </div>
+    <div class="bingo-card">
+      <div class="bingo-left">
+        <div class="bingo-stamp">✓ BINGO</div>
+        <div class="bingo-check">⚡ Green confirmado</div>
+      </div>
+      <div class="bingo-odd-wrap">
+        <div class="bingo-odd-label">ODD</div>
+        <div class="bingo-odd"><em>1</em>32</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <p class="cta-hint">👇 Toque abaixo para entrar no grupo</p>
+    <a class="cta-btn" href="https://t.me/SEU_GRUPO_AQUI" target="_blank">
+      ENTRAR NO GRUPO &nbsp;→
+    </a>
+    <p class="cta-free">🔒 100% Gratuito · Acesso Imediato</p>
+  </div>
+
+  <div class="footer">
+    <p class="footer-resp">🔞 Jogue com responsabilidade · +18</p>
+    <p>Este site não faz parte do Facebook ou do Facebook Inc. Este site não é endossado pelo Facebook de nenhuma maneira. FACEBOOK é uma marca comercial independente da FACEBOOK, Inc. Todos os direitos reservados © 2025 · Termos de Uso · Política de Privacidade</p>
+  </div>
+
+</div>
+</body>
+</html>
