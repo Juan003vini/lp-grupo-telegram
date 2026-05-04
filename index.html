@@ -54,9 +54,11 @@
     margin: 0 auto;
     padding: 0 20px 40px;
   }
+
+  /* HEADER */
   .header {
     text-align: center;
-    padding: 40px 0 24px;
+    padding: 32px 0 20px;
   }
   .badge {
     display: inline-block;
@@ -69,7 +71,7 @@
     letter-spacing: 2px;
     color: var(--green);
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     animation: pulse-border 2s infinite;
   }
   @keyframes pulse-border {
@@ -78,7 +80,7 @@
   }
   .title-main {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 58px;
+    font-size: 54px;
     line-height: 1;
     color: #fff;
     letter-spacing: 1px;
@@ -86,41 +88,22 @@
   .title-main span {
     color: var(--green);
     display: block;
-    font-size: 72px;
+    font-size: 68px;
   }
   .subtitle {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--muted);
-    margin-top: 12px;
+    margin-top: 10px;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 28px 0;
-    opacity: 0.4;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--green);
-  }
-  .divider-text {
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--green);
-    font-weight: 700;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
+
+  /* STATS */
   .stats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
   .stat-box {
     background: var(--card-bg);
@@ -143,6 +126,77 @@
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
+
+  /* CTA */
+  .cta-wrap {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .cta-hint {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .cta-btn {
+    display: block;
+    width: 100%;
+    background: var(--green);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    padding: 18px 20px;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 30px rgba(0,230,118,0.35), 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+  }
+  .cta-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 15px rgba(0,230,118,0.2);
+  }
+  .cta-free {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.85;
+  }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+    opacity: 0.4;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--green);
+  }
+  .divider-text {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--green);
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* BINGOS */
   .bingos-label {
     font-size: 11px;
     font-weight: 700;
@@ -174,14 +228,14 @@
   .bingo-card:nth-child(1) { animation-delay: 0.1s; }
   .bingo-card:nth-child(2) { animation-delay: 0.25s; }
   @keyframes popIn {
-    from { opacity: 0; transform: scale(0.82); }
+    from { opacity: 0; transform: scale(0.92); }
     to   { opacity: 1; transform: scale(1); }
   }
   .bingo-card::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(0,230,118,0.12) 0%, transparent 65%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,230,118,0.08) 0%, transparent 65%);
     pointer-events: none;
   }
   .bingo-left {
@@ -232,47 +286,8 @@
     color: var(--green);
     font-style: normal;
   }
-  .cta-wrap { text-align: center; }
-  .cta-hint {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 16px;
-    font-weight: 600;
-  }
-  .cta-btn {
-    display: block;
-    width: 100%;
-    background: var(--green);
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    letter-spacing: 2px;
-    text-decoration: none;
-    padding: 18px 20px;
-    border-radius: 14px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 30px rgba(0,230,118,0.35), 0 4px 20px rgba(0,0,0,0.4);
-  }
-  .cta-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
-  }
-  .cta-btn:active {
-    transform: scale(0.97);
-    box-shadow: 0 0 15px rgba(0,230,118,0.2);
-  }
-  .cta-free {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--green);
-    font-weight: 700;
-    letter-spacing: 1px;
-    opacity: 0.85;
-  }
+
+  /* PULSE DOT */
   .live-dot {
     display: inline-block;
     width: 8px;
@@ -286,6 +301,8 @@
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.2; }
   }
+
+  /* FOOTER */
   .footer {
     margin-top: 36px;
     text-align: center;
@@ -307,6 +324,7 @@
 <body>
 <div class="wrapper">
 
+  <!-- HEADER -->
   <div class="header">
     <div class="badge"><span class="live-dot"></span>Boa do Dia Liberada</div>
     <h1 class="title-main">
@@ -316,6 +334,7 @@
     <p class="subtitle">Acesse agora e receba as melhores tips do dia</p>
   </div>
 
+  <!-- STATS -->
   <div class="stats">
     <div class="stat-box">
       <div class="stat-num">46K</div>
@@ -327,6 +346,16 @@
     </div>
   </div>
 
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <p class="cta-hint">👇 Toque abaixo para entrar no grupo</p>
+    <a class="cta-btn" href="#">
+      ENTRAR NO GRUPO &nbsp;→
+    </a>
+    <p class="cta-free">🔒 100% Gratuito · Acesso Imediato</p>
+  </div>
+
+  <!-- BINGOS -->
   <div class="divider"><span class="divider-text">Bingos Recentes</span></div>
   <p class="bingos-label">🎯 ODDs confirmadas no green</p>
 
@@ -353,14 +382,7 @@
     </div>
   </div>
 
-  <div class="cta-wrap">
-    <p class="cta-hint">👇 Toque abaixo para entrar no grupo</p>
-    <a class="cta-btn" href="https://t.me/SEU_GRUPO_AQUI" target="_blank">
-      ENTRAR NO GRUPO &nbsp;→
-    </a>
-    <p class="cta-free">🔒 100% Gratuito · Acesso Imediato</p>
-  </div>
-
+  <!-- FOOTER -->
   <div class="footer">
     <p class="footer-resp">🔞 Jogue com responsabilidade · +18</p>
     <p>Este site não faz parte do Facebook ou do Facebook Inc. Este site não é endossado pelo Facebook de nenhuma maneira. FACEBOOK é uma marca comercial independente da FACEBOOK, Inc. Todos os direitos reservados © 2025 · Termos de Uso · Política de Privacidade</p>
