@@ -5,6 +5,266 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grupo Liberado!</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script>
+/**
+ * Trackout - Script de Tracking Standalone
+ * Cole este script em qualquer página HTML
+ * 
+ * CONFIGURAÇÃO: Preencha as variáveis abaixo
+ */
+
+const TRACKOUT_CONFIG = {
+  // URL da API (não altere)
+  api_url: 'https://api.trackout.com.br',
+  
+  // === CONFIGURAÇÃO DO PIXEL ===
+  webhook_suffix: 'payload_igor_silva54',
+  bot_token: '8273244324:AAG2CHkdv4GADjDM8GjDAAgY3STrBXCzTkI',
+  chat_id: '-1001193396925',
+  pixel_id: '1552965672826257'
+};
+
+// ========== NÃO EDITE ABAIXO DESTA LINHA ==========
+
+(function () {
+  const config = TRACKOUT_CONFIG;
+
+  if (!config.webhook_suffix || !config.bot_token || !config.chat_id) {
+    console.error('Trackout: Configure webhook_suffix, bot_token e chat_id');
+    return;
+  }
+  
+  let metaParamBuilder = null;
+  let paramBuilderReady = false;
+  
+  function loadMetaParamBuilder() {
+    return new Promise((resolve) => {
+      if (window.metaParamBuilder && window.metaParamBuilder.initialized) {
+        metaParamBuilder = window.metaParamBuilder;
+        paramBuilderReady = true;
+        resolve(metaParamBuilder);
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = config.api_url + '/static/param-builder.js';
+      script.async = true;
+      script.onload = () => {
+        if (window.metaParamBuilder) {
+          metaParamBuilder = window.metaParamBuilder;
+          metaParamBuilder.init().then(() => {
+            paramBuilderReady = true;
+            resolve(metaParamBuilder);
+          });
+        } else {
+          resolve(null);
+        }
+      };
+      script.onerror = () => {
+        console.warn('Trackout: Não foi possível carregar param-builder.js, usando fallback');
+        resolve(null);
+      };
+      document.head.appendChild(script);
+      
+      setTimeout(() => {
+        if (!paramBuilderReady) {
+          resolve(null);
+        }
+      }, 5000);
+    });
+  }
+
+  function generateUUID() {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function getOrCreateUserUuid() {
+    const key = 'trackout_user_uuid';
+    let uuid = localStorage.getItem(key);
+    if (!uuid) {
+      uuid = generateUUID();
+      localStorage.setItem(key, uuid);
+    }
+    return uuid;
+  }
+
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const cookies = decodeURIComponent(document.cookie).split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.indexOf(nameEQ) === 0) return cookie.substring(nameEQ.length);
+    }
+    return null;
+  }
+
+  function setCookieSafe(name, value) {
+    const isSecure = location.protocol === 'https:';
+    const secureFlag = isSecure ? '; Secure' : '';
+    const expires = new Date(Date.now() + 7776000000).toUTCString();
+    document.cookie = `${name}=${value}; path=/; max-age=7776000; expires=${expires}; samesite=Lax${secureFlag}`;
+  }
+
+  function createFbcCookieFromFbclidFallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fbclid = urlParams.get('fbclid');
+    if (!fbclid) return;
+    const existingFbc = getCookie('_fbc');
+    if (existingFbc && existingFbc.endsWith('.' + fbclid)) return;
+    const value = `fb.1.${Date.now()}.${fbclid}`;
+    setCookieSafe('_fbc', value);
+  }
+
+  function createFbpCookieFallback() {
+    if (getCookie('_fbp')) return;
+    const fbpValue = `fb.1.${Date.now()}.${Math.floor(Math.random() * 1e10)}`;
+    setCookieSafe('_fbp', fbpValue);
+  }
+  
+  async function getClientData() {
+    if (metaParamBuilder && paramBuilderReady) {
+      return metaParamBuilder.getClientData();
+    }
+    return {
+      fbp: getCookie('_fbp'),
+      fbc: getCookie('_fbc'),
+      client_ip_address: getCookie('_trackout_ip') || null,
+      client_user_agent: navigator.userAgent
+    };
+  }
+
+  if (config.pixel_id) {
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = '2.0';
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = true;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', config.pixel_id);
+  }
+  
+  function trackPixelEvent(eventName, eventId, customData = {}) {
+    if (!config.pixel_id || typeof fbq !== 'function') return;
+    fbq('track', eventName, customData, { eventID: eventId });
+    console.log(`[Trackout] Pixel ${eventName} disparado com eventID: ${eventId}`);
+  }
+
+  async function enviarEvento(action, eventId) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientData = await getClientData();
+    if (!eventId) eventId = generateUUID();
+    const eventTime = Math.floor(Date.now() / 1000);
+    
+    const payload = {
+      action: action,
+      flow_type: 'direct',
+      url: window.location.hostname,
+      path: window.location.pathname,
+      full_url: window.location.href,
+      referrer: document.referrer,
+      user_agent: clientData.client_user_agent,
+      user_id: getOrCreateUserUuid(),
+      event_id: eventId,
+      event_time: eventTime,
+      fbp: clientData.fbp,
+      fbc: clientData.fbc,
+      client_ip_address: clientData.client_ip_address,
+      utms: [...urlParams.entries()]
+        .filter(([k]) => k.startsWith('utm_'))
+        .map(([k, v]) => `${k}=${v}`).join('&'),
+      bot_token: config.bot_token,
+      chat_id: config.chat_id,
+      webhook_suffix: config.webhook_suffix,
+      pixel_id: config.pixel_id
+    };
+
+    try {
+      const response = await fetch(config.api_url + '/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return response.json();
+    } catch (err) {
+      console.error('Trackout: Erro ao enviar evento:', err);
+      return { success: false, message: 'Erro de conexão' };
+    }
+  }
+
+  function createPopup() {
+    if (document.getElementById('trackout-popup')) return;
+    const popup = document.createElement('div');
+    popup.id = 'trackout-popup';
+    popup.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;';
+    popup.innerHTML = '<div style="background:#fff; padding:30px 50px; font-size:20px; font-weight:bold; border-radius:8px; box-shadow:0 0 20px rgba(0,0,0,0.3);">Redirecionando...</div>';
+    document.body.appendChild(popup);
+  }
+
+  async function init() {
+    await loadMetaParamBuilder();
+    if (!paramBuilderReady) {
+      createFbcCookieFromFbclidFallback();
+      createFbpCookieFallback();
+    } else {
+      await metaParamBuilder.waitForFbp(2000);
+    }
+    const pageViewEventId = generateUUID();
+    trackPixelEvent('PageView', pageViewEventId);
+    enviarEvento('pageview', pageViewEventId);
+  }
+
+  init();
+
+  document.addEventListener('DOMContentLoaded', function () {
+    createPopup();
+    const links = document.querySelectorAll('a');
+    links.forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const popup = document.getElementById('trackout-popup');
+        if (popup) popup.style.display = 'flex';
+        const viewContentEventId = generateUUID();
+        trackPixelEvent('ViewContent', viewContentEventId, {
+          content_name: 'Link Telegram',
+          content_category: 'telegram'
+        });
+        const result = await enviarEvento('view_content', viewContentEventId);
+        if (result.success && result.link) {
+          window.location.href = result.link;
+        } else {
+          alert('Erro: ' + (result.message || 'Não foi possível gerar o link'));
+          if (popup) popup.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  console.log('Trackout: Inicializado com sucesso (deduplicação ativa)');
+})();
+</script>
 <style>
   :root {
     --green: #00E676;
@@ -54,8 +314,6 @@
     margin: 0 auto;
     padding: 0 20px 40px;
   }
-
-  /* HEADER */
   .header {
     text-align: center;
     padding: 32px 0 20px;
@@ -97,8 +355,6 @@
     font-weight: 600;
     letter-spacing: 0.5px;
   }
-
-  /* STATS */
   .stats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -126,8 +382,6 @@
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
-
-  /* CTA */
   .cta-wrap {
     text-align: center;
     margin-bottom: 28px;
@@ -138,7 +392,7 @@
     margin-bottom: 14px;
     font-weight: 600;
   }
-  .cta-btn {
+  a.cta-btn {
     display: block;
     width: 100%;
     background: var(--green);
@@ -154,13 +408,13 @@
     transition: transform 0.15s, box-shadow 0.15s;
     box-shadow: 0 0 30px rgba(0,230,118,0.35), 0 4px 20px rgba(0,0,0,0.4);
   }
-  .cta-btn::before {
+  a.cta-btn::before {
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
   }
-  .cta-btn:active {
+  a.cta-btn:active {
     transform: scale(0.97);
     box-shadow: 0 0 15px rgba(0,230,118,0.2);
   }
@@ -172,8 +426,6 @@
     letter-spacing: 1px;
     opacity: 0.85;
   }
-
-  /* DIVIDER */
   .divider {
     display: flex;
     align-items: center;
@@ -195,8 +447,6 @@
     text-transform: uppercase;
     white-space: nowrap;
   }
-
-  /* BINGOS */
   .bingos-label {
     font-size: 11px;
     font-weight: 700;
@@ -286,8 +536,6 @@
     color: var(--green);
     font-style: normal;
   }
-
-  /* PULSE DOT */
   .live-dot {
     display: inline-block;
     width: 8px;
@@ -301,8 +549,6 @@
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.2; }
   }
-
-  /* FOOTER */
   .footer {
     margin-top: 36px;
     text-align: center;
@@ -324,7 +570,6 @@
 <body>
 <div class="wrapper">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="badge"><span class="live-dot"></span>Boa do Dia Liberada</div>
     <h1 class="title-main">
@@ -334,7 +579,6 @@
     <p class="subtitle">Acesse agora e receba as melhores tips do dia</p>
   </div>
 
-  <!-- STATS -->
   <div class="stats">
     <div class="stat-box">
       <div class="stat-num">46K</div>
@@ -346,7 +590,6 @@
     </div>
   </div>
 
-  <!-- CTA -->
   <div class="cta-wrap">
     <p class="cta-hint">👇 Toque abaixo para entrar no grupo</p>
     <a class="cta-btn" href="#">
@@ -355,7 +598,6 @@
     <p class="cta-free">🔒 100% Gratuito · Acesso Imediato</p>
   </div>
 
-  <!-- BINGOS -->
   <div class="divider"><span class="divider-text">Bingos Recentes</span></div>
   <p class="bingos-label">🎯 ODDs confirmadas no green</p>
 
@@ -382,7 +624,6 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="footer">
     <p class="footer-resp">🔞 Jogue com responsabilidade · +18</p>
     <p>Este site não faz parte do Facebook ou do Facebook Inc. Este site não é endossado pelo Facebook de nenhuma maneira. FACEBOOK é uma marca comercial independente da FACEBOOK, Inc. Todos os direitos reservados © 2025 · Termos de Uso · Política de Privacidade</p>
