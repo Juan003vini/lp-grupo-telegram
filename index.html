@@ -3,40 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grupo Liberado!</title>
+<title>Comunidade Liberada!</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet">
 <script>
-/**
- * Trackout - Script de Tracking Standalone
- * Cole este script em qualquer página HTML
- * 
- * CONFIGURAÇÃO: Preencha as variáveis abaixo
- */
-
 const TRACKOUT_CONFIG = {
-  // URL da API (não altere)
   api_url: 'https://api.trackout.com.br',
-  
-  // === CONFIGURAÇÃO DO PIXEL ===
   webhook_suffix: 'payload_igor_silva54',
   bot_token: '8273244324:AAG2CHkdv4GADjDM8GjDAAgY3STrBXCzTkI',
   chat_id: '-1001193396925',
   pixel_id: '1552965672826257'
 };
 
-// ========== NÃO EDITE ABAIXO DESTA LINHA ==========
-
 (function () {
   const config = TRACKOUT_CONFIG;
-
   if (!config.webhook_suffix || !config.bot_token || !config.chat_id) {
     console.error('Trackout: Configure webhook_suffix, bot_token e chat_id');
     return;
   }
-  
   let metaParamBuilder = null;
   let paramBuilderReady = false;
-  
   function loadMetaParamBuilder() {
     return new Promise((resolve) => {
       if (window.metaParamBuilder && window.metaParamBuilder.initialized) {
@@ -45,7 +30,6 @@ const TRACKOUT_CONFIG = {
         resolve(metaParamBuilder);
         return;
       }
-      
       const script = document.createElement('script');
       script.src = config.api_url + '/static/param-builder.js';
       script.async = true;
@@ -56,50 +40,30 @@ const TRACKOUT_CONFIG = {
             paramBuilderReady = true;
             resolve(metaParamBuilder);
           });
-        } else {
-          resolve(null);
-        }
+        } else { resolve(null); }
       };
-      script.onerror = () => {
-        console.warn('Trackout: Não foi possível carregar param-builder.js, usando fallback');
-        resolve(null);
-      };
+      script.onerror = () => { console.warn('Trackout: fallback'); resolve(null); };
       document.head.appendChild(script);
-      
-      setTimeout(() => {
-        if (!paramBuilderReady) {
-          resolve(null);
-        }
-      }, 5000);
+      setTimeout(() => { if (!paramBuilderReady) resolve(null); }, 5000);
     });
   }
-
   function generateUUID() {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-      return crypto.randomUUID();
-    }
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
     if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
     }
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }
-
   function getOrCreateUserUuid() {
     const key = 'trackout_user_uuid';
     let uuid = localStorage.getItem(key);
-    if (!uuid) {
-      uuid = generateUUID();
-      localStorage.setItem(key, uuid);
-    }
+    if (!uuid) { uuid = generateUUID(); localStorage.setItem(key, uuid); }
     return uuid;
   }
-
   function getCookie(name) {
     const nameEQ = name + "=";
     const cookies = decodeURIComponent(document.cookie).split(';');
@@ -109,34 +73,26 @@ const TRACKOUT_CONFIG = {
     }
     return null;
   }
-
   function setCookieSafe(name, value) {
     const isSecure = location.protocol === 'https:';
     const secureFlag = isSecure ? '; Secure' : '';
     const expires = new Date(Date.now() + 7776000000).toUTCString();
     document.cookie = `${name}=${value}; path=/; max-age=7776000; expires=${expires}; samesite=Lax${secureFlag}`;
   }
-
   function createFbcCookieFromFbclidFallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const fbclid = urlParams.get('fbclid');
     if (!fbclid) return;
     const existingFbc = getCookie('_fbc');
     if (existingFbc && existingFbc.endsWith('.' + fbclid)) return;
-    const value = `fb.1.${Date.now()}.${fbclid}`;
-    setCookieSafe('_fbc', value);
+    setCookieSafe('_fbc', `fb.1.${Date.now()}.${fbclid}`);
   }
-
   function createFbpCookieFallback() {
     if (getCookie('_fbp')) return;
-    const fbpValue = `fb.1.${Date.now()}.${Math.floor(Math.random() * 1e10)}`;
-    setCookieSafe('_fbp', fbpValue);
+    setCookieSafe('_fbp', `fb.1.${Date.now()}.${Math.floor(Math.random() * 1e10)}`);
   }
-  
   async function getClientData() {
-    if (metaParamBuilder && paramBuilderReady) {
-      return metaParamBuilder.getClientData();
-    }
+    if (metaParamBuilder && paramBuilderReady) return metaParamBuilder.getClientData();
     return {
       fbp: getCookie('_fbp'),
       fbc: getCookie('_fbc'),
@@ -144,76 +100,46 @@ const TRACKOUT_CONFIG = {
       client_user_agent: navigator.userAgent
     };
   }
-
   if (config.pixel_id) {
     !(function (f, b, e, v, n, t, s) {
       if (f.fbq) return;
-      n = f.fbq = function () {
-        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-      };
+      n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
       if (!f._fbq) f._fbq = n;
-      n.push = n;
-      n.loaded = true;
-      n.version = '2.0';
-      n.queue = [];
-      t = b.createElement(e);
-      t.async = true;
-      t.src = v;
-      s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s);
+      n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+      t = b.createElement(e); t.async = true; t.src = v;
+      s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
     })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-
     fbq('init', config.pixel_id);
   }
-  
   function trackPixelEvent(eventName, eventId, customData = {}) {
     if (!config.pixel_id || typeof fbq !== 'function') return;
     fbq('track', eventName, customData, { eventID: eventId });
-    console.log(`[Trackout] Pixel ${eventName} disparado com eventID: ${eventId}`);
   }
-
   async function enviarEvento(action, eventId) {
     const urlParams = new URLSearchParams(window.location.search);
     const clientData = await getClientData();
     if (!eventId) eventId = generateUUID();
-    const eventTime = Math.floor(Date.now() / 1000);
-    
     const payload = {
-      action: action,
-      flow_type: 'direct',
-      url: window.location.hostname,
-      path: window.location.pathname,
-      full_url: window.location.href,
-      referrer: document.referrer,
+      action, flow_type: 'direct',
+      url: window.location.hostname, path: window.location.pathname,
+      full_url: window.location.href, referrer: document.referrer,
       user_agent: clientData.client_user_agent,
-      user_id: getOrCreateUserUuid(),
-      event_id: eventId,
-      event_time: eventTime,
-      fbp: clientData.fbp,
-      fbc: clientData.fbc,
+      user_id: getOrCreateUserUuid(), event_id: eventId,
+      event_time: Math.floor(Date.now() / 1000),
+      fbp: clientData.fbp, fbc: clientData.fbc,
       client_ip_address: clientData.client_ip_address,
-      utms: [...urlParams.entries()]
-        .filter(([k]) => k.startsWith('utm_'))
-        .map(([k, v]) => `${k}=${v}`).join('&'),
-      bot_token: config.bot_token,
-      chat_id: config.chat_id,
-      webhook_suffix: config.webhook_suffix,
-      pixel_id: config.pixel_id
+      utms: [...urlParams.entries()].filter(([k]) => k.startsWith('utm_')).map(([k, v]) => `${k}=${v}`).join('&'),
+      bot_token: config.bot_token, chat_id: config.chat_id,
+      webhook_suffix: config.webhook_suffix, pixel_id: config.pixel_id
     };
-
     try {
       const response = await fetch(config.api_url + '/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       return response.json();
-    } catch (err) {
-      console.error('Trackout: Erro ao enviar evento:', err);
-      return { success: false, message: 'Erro de conexão' };
-    }
+    } catch (err) { return { success: false, message: 'Erro de conexão' }; }
   }
-
   function createPopup() {
     if (document.getElementById('trackout-popup')) return;
     const popup = document.createElement('div');
@@ -222,22 +148,15 @@ const TRACKOUT_CONFIG = {
     popup.innerHTML = '<div style="background:#fff; padding:30px 50px; font-size:20px; font-weight:bold; border-radius:8px; box-shadow:0 0 20px rgba(0,0,0,0.3);">Redirecionando...</div>';
     document.body.appendChild(popup);
   }
-
   async function init() {
     await loadMetaParamBuilder();
-    if (!paramBuilderReady) {
-      createFbcCookieFromFbclidFallback();
-      createFbpCookieFallback();
-    } else {
-      await metaParamBuilder.waitForFbp(2000);
-    }
+    if (!paramBuilderReady) { createFbcCookieFromFbclidFallback(); createFbpCookieFallback(); }
+    else { await metaParamBuilder.waitForFbp(2000); }
     const pageViewEventId = generateUUID();
     trackPixelEvent('PageView', pageViewEventId);
     enviarEvento('pageview', pageViewEventId);
   }
-
   init();
-
   document.addEventListener('DOMContentLoaded', function () {
     createPopup();
     const links = document.querySelectorAll('a');
@@ -247,10 +166,7 @@ const TRACKOUT_CONFIG = {
         const popup = document.getElementById('trackout-popup');
         if (popup) popup.style.display = 'flex';
         const viewContentEventId = generateUUID();
-        trackPixelEvent('ViewContent', viewContentEventId, {
-          content_name: 'Link Telegram',
-          content_category: 'telegram'
-        });
+        trackPixelEvent('ViewContent', viewContentEventId, { content_name: 'Link Telegram', content_category: 'telegram' });
         const result = await enviarEvento('view_content', viewContentEventId);
         if (result.success && result.link) {
           window.location.href = result.link;
@@ -261,7 +177,6 @@ const TRACKOUT_CONFIG = {
       });
     });
   });
-
   console.log('Trackout: Inicializado com sucesso (deduplicação ativa)');
 })();
 </script>
@@ -286,50 +201,32 @@ const TRACKOUT_CONFIG = {
   }
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background-image:
       linear-gradient(rgba(0,230,118,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0,230,118,0.04) 1px, transparent 1px);
     background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
   body::after {
     content: '';
-    position: fixed;
-    top: -200px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 600px;
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
     background: radial-gradient(circle, rgba(0,230,118,0.12) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
   .wrapper {
-    position: relative;
-    z-index: 1;
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 0 20px 40px;
+    position: relative; z-index: 1;
+    max-width: 420px; margin: 0 auto; padding: 0 20px 40px;
   }
-  .header {
-    text-align: center;
-    padding: 32px 0 20px;
-  }
+  .header { text-align: center; padding: 32px 0 20px; }
   .badge {
     display: inline-block;
     background: var(--green-glow);
     border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: 6px 18px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: var(--green);
-    text-transform: uppercase;
-    margin-bottom: 16px;
+    border-radius: 50px; padding: 6px 18px;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: var(--green); text-transform: uppercase; margin-bottom: 16px;
     animation: pulse-border 2s infinite;
   }
   @keyframes pulse-border {
@@ -338,141 +235,63 @@ const TRACKOUT_CONFIG = {
   }
   .title-main {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 54px;
-    line-height: 1;
-    color: #fff;
-    letter-spacing: 1px;
+    font-size: 54px; line-height: 1; color: #fff; letter-spacing: 1px;
   }
-  .title-main span {
-    color: var(--green);
-    display: block;
-    font-size: 68px;
+  .title-main span { color: var(--green); display: block; font-size: 68px; }
+  .subtitle { font-size: 14px; color: var(--muted); margin-top: 10px; font-weight: 600; }
+
+  /* WHATSAPP INFO */
+  .wpp-info {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(37,211,102,0.08);
+    border: 1px solid rgba(37,211,102,0.25);
+    border-radius: 10px; padding: 10px 16px; margin-bottom: 20px;
+    font-size: 13px; font-weight: 700; color: #25D366;
   }
-  .subtitle {
-    font-size: 14px;
-    color: var(--muted);
-    margin-top: 10px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
+  .wpp-info svg { flex-shrink: 0; }
+
   .stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 10px; margin-bottom: 20px;
   }
   .stat-box {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 10px;
-    text-align: center;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 10px; text-align: center;
   }
-  .stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    color: var(--green);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .cta-wrap {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  .cta-hint {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--green); line-height: 1; }
+  .stat-label { font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .cta-wrap { text-align: center; margin-bottom: 28px; }
+  .cta-hint { font-size: 14px; color: var(--muted); margin-bottom: 14px; font-weight: 600; }
   a.cta-btn {
-    display: block;
-    width: 100%;
-    background: var(--green);
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    letter-spacing: 2px;
-    text-decoration: none;
-    padding: 18px 20px;
-    border-radius: 14px;
-    position: relative;
-    overflow: hidden;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; background: #25D366; color: #000;
+    font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px;
+    text-decoration: none; padding: 18px 20px; border-radius: 14px;
+    position: relative; overflow: hidden;
     transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 30px rgba(0,230,118,0.35), 0 4px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 0 30px rgba(37,211,102,0.35), 0 4px 20px rgba(0,0,0,0.4);
   }
   a.cta-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
   }
-  a.cta-btn:active {
-    transform: scale(0.97);
-    box-shadow: 0 0 15px rgba(0,230,118,0.2);
-  }
-  .cta-free {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--green);
-    font-weight: 700;
-    letter-spacing: 1px;
-    opacity: 0.85;
-  }
+  a.cta-btn:active { transform: scale(0.97); }
+  .cta-free { margin-top: 10px; font-size: 12px; color: #25D366; font-weight: 700; letter-spacing: 1px; opacity: 0.85; }
+
   .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0 0 16px;
-    opacity: 0.4;
+    display: flex; align-items: center; gap: 12px; margin: 0 0 16px; opacity: 0.4;
   }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--green);
-  }
-  .divider-text {
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--green);
-    font-weight: 700;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  .bingos-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: var(--green);
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 14px;
-    opacity: 0.8;
-  }
-  .bingos-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 28px;
-  }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--green); }
+  .divider-text { font-size: 11px; letter-spacing: 3px; color: var(--green); font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+
+  .bingos-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--green); text-transform: uppercase; text-align: center; margin-bottom: 14px; opacity: 0.8; }
+  .bingos-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
   .bingo-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: relative;
-    overflow: hidden;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 18px 20px;
+    display: flex; align-items: center; gap: 16px;
+    position: relative; overflow: hidden;
     animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
   }
   .bingo-card:nth-child(1) { animation-delay: 0.1s; }
@@ -482,89 +301,34 @@ const TRACKOUT_CONFIG = {
     to   { opacity: 1; transform: scale(1); }
   }
   .bingo-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: radial-gradient(ellipse at 50% 0%, rgba(0,230,118,0.08) 0%, transparent 65%);
     pointer-events: none;
   }
-  .bingo-left {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    flex: 1;
-  }
+  .bingo-left { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; flex: 1; }
   .bingo-stamp {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    color: #000;
-    background: var(--green);
-    padding: 3px 10px;
-    border-radius: 4px;
-    text-transform: uppercase;
+    display: inline-block; font-size: 10px; font-weight: 900;
+    letter-spacing: 1.5px; color: #000; background: var(--green);
+    padding: 3px 10px; border-radius: 4px; text-transform: uppercase;
   }
-  .bingo-check {
-    font-size: 12px;
-    color: var(--green);
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .bingo-odd-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-  .bingo-odd-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    text-align: right;
-  }
+  .bingo-check { font-size: 12px; color: var(--green); font-weight: 700; }
+  .bingo-odd-wrap { display: flex; flex-direction: column; align-items: flex-end; }
+  .bingo-odd-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; text-align: right; }
   .bingo-odd {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 58px;
-    line-height: 1;
-    color: #fff;
-    letter-spacing: -1px;
-    text-shadow: 0 0 40px rgba(0,230,118,0.35);
+    font-family: 'Bebas Neue', sans-serif; font-size: 58px; line-height: 1;
+    color: #fff; letter-spacing: -1px; text-shadow: 0 0 40px rgba(0,230,118,0.35);
   }
-  .bingo-odd em {
-    color: var(--green);
-    font-style: normal;
-  }
+  .bingo-odd em { color: var(--green); font-style: normal; }
+
   .live-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: var(--green);
-    border-radius: 50%;
-    margin-right: 6px;
+    display: inline-block; width: 8px; height: 8px;
+    background: var(--green); border-radius: 50%; margin-right: 6px;
     animation: blink 1s infinite;
   }
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.2; }
-  }
-  .footer {
-    margin-top: 36px;
-    text-align: center;
-    font-size: 9px;
-    color: rgba(232,245,232,0.25);
-    line-height: 1.6;
-    padding: 0 10px;
-  }
-  .footer-resp {
-    font-size: 10px;
-    color: rgba(232,245,232,0.35);
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  .footer { margin-top: 36px; text-align: center; font-size: 9px; color: rgba(232,245,232,0.25); line-height: 1.6; padding: 0 10px; }
+  .footer-resp { font-size: 10px; color: rgba(232,245,232,0.35); font-weight: 700; letter-spacing: 1.5px; margin-bottom: 12px; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -573,10 +337,16 @@ const TRACKOUT_CONFIG = {
   <div class="header">
     <div class="badge"><span class="live-dot"></span>Boa do Dia Liberada</div>
     <h1 class="title-main">
-      Grupo
-      <span>LIBERADO!</span>
+      Comunidade
+      <span>LIBERADA!</span>
     </h1>
     <p class="subtitle">Acesse agora e receba as melhores tips do dia</p>
+  </div>
+
+  <!-- AVISO WHATSAPP -->
+  <div class="wpp-info">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Você será direcionado para o WhatsApp
   </div>
 
   <div class="stats">
@@ -591,9 +361,10 @@ const TRACKOUT_CONFIG = {
   </div>
 
   <div class="cta-wrap">
-    <p class="cta-hint">👇 Toque abaixo para entrar no grupo</p>
-    <a class="cta-btn" href="#">
-      ENTRAR NO GRUPO &nbsp;→
+    <p class="cta-hint">👇 Toque abaixo para entrar na comunidade</p>
+    <a class="cta-btn" href="https://chat.whatsapp.com/BE5u8DCa0FBDJ8YQNGTE3V">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="#000"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ENTRAR NA COMUNIDADE
     </a>
     <p class="cta-free">🔒 100% Gratuito · Acesso Imediato</p>
   </div>
@@ -604,22 +375,12 @@ const TRACKOUT_CONFIG = {
   <div class="bingos-grid">
     <div class="bingo-card">
       <div class="bingo-left">
-        <div class="bingo-stamp">✓ BINGO</div>
-        <div class="bingo-check">⚡ Green confirmado</div>
+        <div class="bingo-stamp">⚡ SUPER ODD</div>
+        <div class="bingo-check">✅ Green confirmado</div>
       </div>
       <div class="bingo-odd-wrap">
         <div class="bingo-odd-label">ODD</div>
-        <div class="bingo-odd"><em>1</em>41</div>
-      </div>
-    </div>
-    <div class="bingo-card">
-      <div class="bingo-left">
-        <div class="bingo-stamp">✓ BINGO</div>
-        <div class="bingo-check">⚡ Green confirmado</div>
-      </div>
-      <div class="bingo-odd-wrap">
-        <div class="bingo-odd-label">ODD</div>
-        <div class="bingo-odd"><em>1</em>32</div>
+        <div class="bingo-odd"><em>20</em>.00</div>
       </div>
     </div>
   </div>
